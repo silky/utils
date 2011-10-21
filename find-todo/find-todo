@@ -1,0 +1,8 @@
+#!/bin/sh
+if [ -z "$1" ]
+then
+    dir="${HOME}/dev"
+else
+    dir="$1"
+fi
+grep -sinr -F -f patterns --include=*.py --exclude-dir=.vim --exclude-dir=dotfiles "$dir" | python find-todo.py

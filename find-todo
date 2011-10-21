@@ -1,2 +1,0 @@
-#!/bin/sh
-grep -sinr 'TODO' **.py *.py | python find-todo.py
