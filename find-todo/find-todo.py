@@ -12,7 +12,7 @@
 import io
 import sys
 
-def process_python_todos (f, initial_line, line_number, ttype):
+def process_single_line_comment_todos (f, initial_line, line_number, ttype, comment_token):
     """
         Returns a dictionary with todos and line numbers,
         starting from the given one. Will return 1 or more
@@ -41,10 +41,10 @@ def process_python_todos (f, initial_line, line_number, ttype):
         
         while line:
             line = line.lstrip()
-            if not line.startswith('#'):
+            if not line.startswith(comment_token):
                 break
 
-            line = line.lstrip('# ').rstrip()
+            line = line.lstrip(comment_token + ' ').rstrip()
 
             # Check to see if it starts with some sort
             # of indicator-of-listed-todo's, like: "-+>N"
@@ -92,6 +92,7 @@ with open("patterns", "r") as pfile:
 
 patterns = [ p.strip() for p in patterns ]
 
+comment_tokens = { 'py': '#', 'tex': '%' }
 
 for raw_line in lines:
     splat       = raw_line.split(':')
@@ -108,11 +109,11 @@ for raw_line in lines:
     ext   = splat[len(splat) - 1]
     ttype = None
 
-    if ext == "py":
-        if not line.startswith('#'):
+    if ext == "py" or ext == 'tex':
+        if not line.startswith( comment_tokens[ext] ):
             continue
 
-        line = line.lstrip('# ')
+        line = line.lstrip(comment_tokens[ext] + ' ')
         safe = False
         
         for p in patterns:
@@ -124,11 +125,7 @@ for raw_line in lines:
         if not safe:
             continue
 
-        # Now we need to open this file, and look at the lines
-        # near this one, and gather appropriate information from
-        # them.
-
-        todos = process_python_todos(f, line, line_number, ttype)
+        todos = process_single_line_comment_todos(f, line, line_number, ttype, comment_tokens[ext])
 
         todo_count = todo_count + len(todos)
 

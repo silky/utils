@@ -5,4 +5,4 @@ then
 else
     dir="$1"
 fi
-grep -sinr -F -f patterns --include=*.py --exclude-dir=.vim --exclude-dir=dotfiles "$dir" | python find-todo.py
+grep -sinr -F -f patterns --include=*.py --include=*.tex --exclude-dir=.vim --exclude-dir=dotfiles "$dir" | python find-todo.py
