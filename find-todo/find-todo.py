@@ -5,7 +5,7 @@
 # todo items in there.
 #
 # Note that the current implementation is designed only
-# for python.
+# for single-line comment languages.
 #
 # Author: Noon Silk <noonsilk@gmail.com>
 
