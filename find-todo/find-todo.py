@@ -12,6 +12,7 @@
 import io
 import os
 import sys
+import copy
 import time
 import pickle
 import argparse
@@ -115,10 +116,14 @@ with open(patterns_file, "r") as pfile:
 patterns = [ p.strip() for p in patterns ]
 comment_tokens = { 'py': '#', 'tex': '%', 'm': '%' }
 anything_modified = False
+seen_files = {}
 
 for raw_line in lines:
     splat = raw_line.split(':')
     f     = splat[0]
+
+    if not seen_files.has_key(f):
+        seen_files[f] = True
 
     # see if this file has been modified, and if we should keep processing it.
     this_time = time.ctime(os.path.getmtime(f))
@@ -132,7 +137,6 @@ for raw_line in lines:
             mtimes.pop(f)
             anything_modified = True
             
-    
     line_number = splat[1]
     line        = "".join(splat[2:]).strip()
 
@@ -168,7 +172,15 @@ for raw_line in lines:
         else:
             finfo[f] = [t]
 
-todo_count = 0
+todo_count   = 0
+temp_finfo   = copy.deepcopy(finfo)
+temp_mtimes  = copy.deepcopy(mtimes)
+
+for f in temp_finfo:
+    if( not seen_files.has_key(f) ):
+        finfo.pop(f)
+        mtimes.pop(f)
+        continue
 
 for f in finfo:
     mtimes[f] = time.ctime(os.path.getmtime(f))
@@ -187,8 +199,15 @@ else:
     print "You're all done!"
 
 
+keys = finfo.keys()
+# print keys
+keys.sort()
+# print keys
+
+# sorted_list = [dict[key] for key in keys]
+
 k = 0
-for f in finfo:
+for f in keys:
     print 'File: %s' % f
 
     for item in finfo[f]:
@@ -201,6 +220,3 @@ if anything_modified:
     pdata = [finfo, mtimes]
     with open("%slast.dat" % args.path, "wb") as p:
         pickle.dump(pdata, p)
-else:
-    print "(You've not modified any of these files recently ...)"
-
