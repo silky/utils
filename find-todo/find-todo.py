@@ -8,6 +8,10 @@
 # for python.
 #
 # Author: Noon Silk <noonsilk@gmail.com>
+#
+# TODO:
+#   - Only open files that have been modified since the
+#       the last running of find-todo (use pickle).
 
 import io
 import sys
