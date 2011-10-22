@@ -200,11 +200,7 @@ else:
 
 
 keys = finfo.keys()
-# print keys
 keys.sort()
-# print keys
-
-# sorted_list = [dict[key] for key in keys]
 
 k = 0
 for f in keys:
