@@ -56,7 +56,7 @@ def process_single_line_comment_todos (f, initial_line, line_number, ttype, comm
 
             # TODO: Capture number-based lists in this.
  
-            if line[0] == '-' or line[0] == '+' or line[0] == '>':
+            if line and (line[0] == '-' or line[0] == '+' or line[0] == '>'):
                 line = line.lstrip('-+> ')
 
                 if capturing:
@@ -103,7 +103,7 @@ with open(patterns_file, "r") as pfile:
 
 patterns = [ p.strip() for p in patterns ]
 
-comment_tokens = { 'py': '#', 'tex': '%' }
+comment_tokens = { 'py': '#', 'tex': '%', 'm': '%' }
 
 for raw_line in lines:
     splat       = raw_line.split(':')
@@ -120,7 +120,7 @@ for raw_line in lines:
     ext   = splat[len(splat) - 1]
     ttype = None
 
-    if ext == "py" or ext == 'tex':
+    if ext == "py" or ext == 'tex' or ext == 'm':
         if not line.startswith( comment_tokens[ext] ):
             continue
 
@@ -160,10 +160,12 @@ else:
     print "You're all done!"
 
 
+k = 0
 for f in finfo:
     print 'File: %s' % f
 
     for item in finfo[f]:
-        print ('\t%0' + str(places) + 'd: %s') % (int(item["line"]), item["content"])
+        k = k + 1
+        print ('  %03d) \t%0' + str(places) + 'd: %s') % (k, int(item["line"]), item["content"])
 
     print ''

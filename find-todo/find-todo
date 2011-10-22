@@ -7,4 +7,13 @@ then
 else
     dir="$1"
 fi
-grep -sinr -F -f "$find_todo_path"patterns --include=*.py --include=*.tex --exclude-dir=.vim --exclude-dir=dotfiles "$dir" | python "$find_todo_path"find-todo.py -path="$find_todo_path"
+find "$dir" -type d \( -name '.vim' -o -name 'dotfiles' \) -prune -o -type f \( -name '*.py' -o -name '*.tex' -o -name '*.m' \) -print0 | xargs -0 grep -Fsinr -f "$find_todo_path"patterns | python "$find_todo_path"find-todo.py -path="$find_todo_path"
+
+#grep -sinr -F -f "$find_todo_path"patterns --include=*.py --include=*.tex --include=*.m --exclude-dir=.vim --exclude-dir=dotfiles "$dir" | python "$find_todo_path"find-todo.py -path="$find_todo_path"
+
+# Consider:
+#   find . -type f -name '*.tex' -print0 | xargs -0 grep -i "include"
+#   http://www.devdaily.com/unix/edu/examples/find.shtml#extensions,
+#   specifically:
+#       find . -type f \( -name '*.m' -o -name '*.tex' \) -print0 | xargs -0 grep -i "TODO"
+#   for multiple file extension
