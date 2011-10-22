@@ -8,13 +8,12 @@
 # for python.
 #
 # Author: Noon Silk <noonsilk@gmail.com>
-#
-# TODO:
-#   - Only open files that have been modified since the
-#       the last running of find-todo (use pickle).
 
 import io
+import os
 import sys
+import time
+import pickle
 import argparse
 
 def process_single_line_comment_todos (f, initial_line, line_number, ttype, comment_token):
@@ -91,24 +90,49 @@ parser.add_argument("-path", type=str, help="Path where this is installed.")
 args = parser.parse_args()
 
 lines = sys.stdin.readlines()
-finfo = {}
+
+finfo  = {}
+mtimes = {}
+
+try:
+    with open("%slast.dat" % args.path, "rb") as p:
+        pdata = pickle.load(p)
+
+    if pdata:
+        finfo  = pdata[0]
+        mtimes = pdata[1]
+
+except Exception as detail:
+    #print 'ERROR trying to open last.data'
+    pass
 
 largest_number = 0
-todo_count     = 0
-
-patterns_file = "%spatterns" % args.path
+patterns_file  = "%spatterns" % args.path
 
 with open(patterns_file, "r") as pfile:
     patterns = pfile.readlines()
 
 patterns = [ p.strip() for p in patterns ]
-
 comment_tokens = { 'py': '#', 'tex': '%', 'm': '%' }
+anything_modified = False
 
 for raw_line in lines:
-    splat       = raw_line.split(':')
+    splat = raw_line.split(':')
+    f     = splat[0]
+
+    # see if this file has been modified, and if we should keep processing it.
+    this_time = time.ctime(os.path.getmtime(f))
+
+    if mtimes.has_key(f) and this_time <= mtimes[f]:
+        # print 'skipping re-processing: %s, len: %s' % (f, len(finfo[f]))
+        continue
+    else:
+        if mtimes.has_key(f) and this_time > mtimes[f]:
+            finfo.pop(f)
+            mtimes.pop(f)
+            anything_modified = True
+            
     
-    f           = splat[0]
     line_number = splat[1]
     line        = "".join(splat[2:]).strip()
 
@@ -138,14 +162,17 @@ for raw_line in lines:
 
         todos = process_single_line_comment_todos(f, line, line_number, ttype, comment_tokens[ext])
 
-        todo_count = todo_count + len(todos)
-
     for t in todos:
         if finfo.has_key(f):
             finfo[f].append(t)
         else:
             finfo[f] = [t]
 
+todo_count = 0
+
+for f in finfo:
+    mtimes[f] = time.ctime(os.path.getmtime(f))
+    todo_count = todo_count + len(finfo[f])
 
 places = 0
 while largest_number > 0:
@@ -169,3 +196,11 @@ for f in finfo:
         print ('  %03d) \t%0' + str(places) + 'd: %s') % (k, int(item["line"]), item["content"])
 
     print ''
+
+if anything_modified:
+    pdata = [finfo, mtimes]
+    with open("%slast.dat" % args.path, "wb") as p:
+        pickle.dump(pdata, p)
+else:
+    print "(You've not modified any of these files recently ...)"
+
