@@ -62,6 +62,11 @@ def process_single_line_comment_todos (f, initial_line, line_number, ttype, comm
             # TODO: Capture number-based lists in this.
 
             if not line and capturing:
+                # TODO:
+                #   Consider looking ahead to see if the next line actually starts
+                #   with one of the valid tokens (perhaps the current one), and if
+                #   so we can consider that to be an item as well.
+
                 # Complete the previous capture
                 result.append({'line': line_start, \
                             'content': "".join(k + ' ' for k in captured).strip(),
