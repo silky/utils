@@ -8,6 +8,10 @@
 # for single-line comment languages.
 #
 # Author: Noon Silk <noonsilk@gmail.com>
+#
+# TODO:
+#   > Line numbers are wrong in some files (~/research),
+#       determine why.
 
 import io
 import os
@@ -39,8 +43,9 @@ def process_single_line_comment_todos (f, initial_line, line_number, ttype, comm
         # Now we have lines of interest, so let's look
         # at lines that are still comments.
         
-        capturing = False
-        captured  = [initial_line]
+        capturing  = False
+        captured   = [initial_line]
+        line_start = k
         
         line = sourcef.readline()
         
@@ -55,17 +60,27 @@ def process_single_line_comment_todos (f, initial_line, line_number, ttype, comm
             # of indicator-of-listed-todo's, like: "-+>N"
 
             # TODO: Capture number-based lists in this.
+
+            if not line and capturing:
+                # Complete the previous capture
+                result.append({'line': line_start, \
+                            'content': "".join(k + ' ' for k in captured).strip(),
+                        'type': ttype })
+                captured = []
+                break # We're done.
  
             if line and (line[0] == '-' or line[0] == '+' or line[0] == '>'):
                 line = line.lstrip('-+> ')
 
                 if capturing:
                     # Complete the previous capture
-                    result.append({'line': k, 'content': "".join(k + ' ' for k in captured).strip(),
+                    result.append({'line': line_start, \
+                            'content': "".join(k + ' ' for k in captured).strip(),
                         'type': ttype })
                     captured = []
-                
-                captured.append(line.strip('-+> '))
+                 
+                captured.append(line)
+                line_start = k
                 capturing = True
             else:
                 captured.append(line.strip())
@@ -73,8 +88,9 @@ def process_single_line_comment_todos (f, initial_line, line_number, ttype, comm
             line = sourcef.readline()
             k = k + 1
 
-        result.append({'line': k, 'content': "".join(k + ' ' for k in captured).strip(),
-            'type': ttype })
+        if captured:
+            result.append({'line': line_start, 'content': "".join(k + ' ' for k in captured).strip(),
+                'type': ttype })
 
     if len(result) == 0:
         if not initial_line:
@@ -104,7 +120,7 @@ try:
         mtimes = pdata[1]
 
 except Exception as detail:
-    #print 'ERROR trying to open last.data'
+    # Disregard any errors opening this file.
     pass
 
 largest_number = 0
