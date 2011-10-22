@@ -15,6 +15,7 @@
 
 import io
 import sys
+import argparse
 
 def process_single_line_comment_todos (f, initial_line, line_number, ttype, comment_token):
     """
@@ -84,14 +85,20 @@ def process_single_line_comment_todos (f, initial_line, line_number, ttype, comm
     return result
 
 # Entrypoint
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-path", type=str, help="Path where this is installed.")
+args = parser.parse_args()
+
 lines = sys.stdin.readlines()
 finfo = {}
 
 largest_number = 0
 todo_count     = 0
 
+patterns_file = "%spatterns" % args.path
 
-with open("patterns", "r") as pfile:
+with open(patterns_file, "r") as pfile:
     patterns = pfile.readlines()
 
 patterns = [ p.strip() for p in patterns ]

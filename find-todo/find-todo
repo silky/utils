@@ -1,8 +1,10 @@
 #!/bin/sh
+# Change this as appropriate.
+find_todo_path="/home/noon/dev/silky-github/utils/find-todo/"
 if [ -z "$1" ]
 then
     dir="${HOME}/dev"
 else
     dir="$1"
 fi
-grep -sinr -F -f patterns --include=*.py --include=*.tex --exclude-dir=.vim --exclude-dir=dotfiles "$dir" | python find-todo.py
+grep -sinr -F -f "$find_todo_path"patterns --include=*.py --include=*.tex --exclude-dir=.vim --exclude-dir=dotfiles "$dir" | python "$find_todo_path"find-todo.py -path="$find_todo_path"
