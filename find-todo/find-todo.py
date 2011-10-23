@@ -12,7 +12,7 @@
 # Usage:
 #
 #   When passed -output=concise, the list of todos can
-#   be fed into vim, by considering the commands:
+#   be fed into vim, say perhaps
 #
 #       :cgetbuffer [bufN]
 #       :cope
@@ -127,7 +127,6 @@ parser.add_argument("-shorten", type=bool, help="True to shorten directorys on c
 args = parser.parse_args()
 
 if args.shorten:
-    print "This feature is disabled, setting it to false"
     args.shorten = False
 
 
