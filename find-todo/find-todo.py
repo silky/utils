@@ -9,9 +9,26 @@
 #
 # Author: Noon Silk <noonsilk@gmail.com>
 #
-# TODO:
-#   > Line numbers are wrong in some files (~/research),
-#       determine why.
+# Usage:
+#
+#   When passed -output=concise, the list of todos can
+#   be fed into vim, by considering the commands:
+#
+#       :cgetbuffer [bufN]
+#       :cope
+#   
+#   i.e. you should consider a command to call your
+#   script, with this output type, and then open up
+#   the resulting buffer.
+#
+#   or alternatively
+#
+#   Command to get this list to show up in quickfix:
+#   execute "!/home/noon/dev/silky-github/utils/find-todo/find-todo ~/dev/
+#   concise>~/temp/foo.err" | cget ~/temp/foo.err | copen<CR>
+#
+#   I've mapped something like this to be a command in my
+#   vimrc: command Gtt execute "...."
 
 import io
 import os
@@ -97,19 +114,22 @@ def process_single_line_comment_todos (f, initial_line, line_number, ttype, comm
             result.append({'line': line_start, 'content': "".join(k + ' ' for k in captured).strip(),
                 'type': ttype })
 
-    if len(result) == 0:
-        if not initial_line:
-            initial_line = "(empty)"
-
-        result.append({ 'line': line_number, 'content': initial_line, 'type': ttype })
-    
     return result
 
 # Entrypoint
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-path", type=str, help="Path where this is installed.")
+parser.add_argument("-output", type=str, help="Output format. Options: 'plain,concise'.", default="plain")
+# Disabled until I can get the behaviour in vim to be correct, may not be
+# neccessary.
+parser.add_argument("-shorten", type=bool, help="True to shorten directorys on concise output", default=False)
 args = parser.parse_args()
+
+if args.shorten:
+    print "This feature is disabled, setting it to false"
+    args.shorten = False
+
 
 lines = sys.stdin.readlines()
 
@@ -213,11 +233,12 @@ while largest_number > 0:
     places = places + 1
 
 
-if todo_count > 0:
-    print 'Summary: %s item(s) to do.' % (todo_count)
-    print ''
-else:
-    print "You're all done!"
+if args.output == 'plain':
+    if todo_count > 0:
+        print 'Summary: %s item(s) to do.' % (todo_count)
+        print ''
+    else:
+        print "You're all done!"
 
 
 keys = finfo.keys()
@@ -225,13 +246,37 @@ keys.sort()
 
 k = 0
 for f in keys:
-    print 'File: %s' % f
+    if args.output == 'plain':
+        print 'File: %s' % f
 
-    for item in finfo[f]:
-        k = k + 1
-        print ('  %03d) \t%0' + str(places) + 'd: %s') % (k, int(item["line"]), item["content"])
+        for item in finfo[f]:
+            k = k + 1
+            print ('  %03d) \t%0' + str(places) + 'd: %s') % (k, int(item["line"]), item["content"])
 
-    print ''
+        print ''
+
+    if args.output == 'concise':
+        for item in finfo[f]:
+            
+            content = item["content"]
+            filename = f
+
+            # TODO: This doesn't work, because vim quickfix doesn't open
+            # the correct file; a revised strategy w.r.t. vim error format
+            # will be required. Implement.
+            
+            if args.shorten:
+                t = filename.split('/')
+                t = [ k for k in t if k ]
+
+                # Shorten, vim-style
+                if len(t) > 1:
+                    filename = "".join("/" + k[0] for k in t[0:len(t) - 1]) + "/" + t[-1]
+            
+            if not content:
+                content = "(empty)"
+                
+            print '%s:%s:%s' % (filename, item["line"], content)
 
 if anything_modified:
     pdata = [finfo, mtimes]

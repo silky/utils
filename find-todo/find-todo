@@ -7,7 +7,15 @@ then
 else
     dir="$1"
 fi
-find -L "$dir" -type d \( -name '.vim' -o -name 'dotfiles' \) -prune -o -type f \( -name '*.py' -o -name '*.tex' -o -name '*.m' \) -print0 | xargs -0 grep -Fsinr -f "$find_todo_path"patterns | python "$find_todo_path"find-todo.py -path="$find_todo_path"
+
+if [ -z "$2" ]
+then
+    out="plain"
+else
+    out="$2"
+fi
+
+find -L "$dir" -type d \( -name '.vim' -o -name 'dotfiles' \) -prune -o -type f \( -name '*.py' -o -name '*.tex' -o -name '*.m' \) -print0 | xargs -0 grep -Fsinr -f "$find_todo_path"patterns | python "$find_todo_path"find-todo.py -path="$find_todo_path" -output="$out"
 
 #grep -sinr -F -f "$find_todo_path"patterns --include=*.py --include=*.tex --include=*.m --exclude-dir=.vim --exclude-dir=dotfiles "$dir" | python "$find_todo_path"find-todo.py -path="$find_todo_path"
 
