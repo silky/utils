@@ -29,6 +29,12 @@
 #
 #   I've mapped something like this to be a command in my
 #   vimrc: command Gtt execute "...."
+#
+#   TODO: Use cgetexpr to load the quickfix window, not the approach above.
+#
+#   Revised expression is:
+#
+#   cgetexpr system("find-todo . concise")
 
 import io
 import os
