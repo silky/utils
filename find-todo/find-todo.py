@@ -30,11 +30,12 @@
 #   I've mapped something like this to be a command in my
 #   vimrc: command Gtt execute "...."
 #
-#   TODO: Use cgetexpr to load the quickfix window, not the approach above.
-#
 #   Revised expression is:
 #
 #   cgetexpr system("find-todo . concise")
+#
+#   TODO: Bug when handling multiple todo's with the same prefix. That is,
+#       I need to fix the prefix handling in general.
 
 import io
 import os
@@ -160,7 +161,7 @@ with open(patterns_file, "r") as pfile:
     patterns = pfile.readlines()
 
 patterns = [ p.strip() for p in patterns ]
-comment_tokens = { 'py': '#', 'tex': '%', 'm': '%' }
+comment_tokens = { 'py': '#', 'tex': '%', 'm': '%', 'wiki': '%%' }
 anything_modified = False
 seen_files = {}
 
@@ -194,7 +195,7 @@ for raw_line in lines:
     ext   = splat[len(splat) - 1]
     ttype = None
 
-    if ext == "py" or ext == 'tex' or ext == 'm':
+    if ext == "py" or ext == 'tex' or ext == 'm' or ext == 'wiki':
         if not line.startswith( comment_tokens[ext] ):
             continue
 
