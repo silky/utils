@@ -1,32 +1,29 @@
-import os
+import os, sys
 
 vcs_maps = {
         "git": {
+            "folder": [".git"],
             "status": "git status",
-            "add": "git add"},
+            "add": "git add",
+            "commit": "git commit -am",
+            "push": "git push"
+            },
         "hg":  {
+            "folder": [".hg"],
             "status": "hg st", 
             "add": "hg add", 
-            "commit": "hg commit -m"}
+            "commit": "hg commit -m",
+            "push": "hg push",
+            }
         }
-
-def command_st ():
-    vcs = get_vcs()
-
-    if vcs:
-        os.system(vcs_maps[vcs]["status"])
-    else:
-        exit(2)
 
 
 def get_vcs (path=None):
     if not path:
         path = os.getcwd()
 
-    maps = {"git": [".git"], "hg": [".hg"], "svn": [".svn"] }
-
-    for t in maps:
-        for folder in maps[t]:
+    for t in vcs_maps:
+        for folder in vcs_maps[t]["folder"]:
             if os.path.exists(os.path.join(path, folder)):
                 return t
 
@@ -39,4 +36,24 @@ def get_vcs (path=None):
 
 
 if __name__ == "__main__":
-    command_st()
+    op = sys.argv[1]
+
+    vcs = get_vcs()
+
+    if not vcs:
+        exit(2) # No version control system found.
+
+    v = vcs_maps[vcs]
+
+    if op == "st":
+        os.system(v["status"])
+
+    if op == "pp":
+        os.system(v["push"])
+
+    if op == "add" or op == "ad":
+        os.system('%s %s' % (v["add"], ' '.join(sys.argv[2:]).strip(' ')))
+
+    if op == "ci":
+        commit_message = '"' + ' '.join(sys.argv[2:]).strip(' ') + '"'
+        os.system('%s %s' % (v["commit"], commit_message))
