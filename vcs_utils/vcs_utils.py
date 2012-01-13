@@ -6,7 +6,8 @@ vcs_maps = {
             "status": "git status",
             "add": "git add",
             "commit": "git commit -am",
-            "push": "git push"
+            "push": "git push",
+            "pull": "git pull",
             },
         "hg":  {
             "folder": [".hg"],
@@ -14,6 +15,7 @@ vcs_maps = {
             "add": "hg add", 
             "commit": "hg commit -m",
             "push": "hg push",
+            "pull": "hg pull",
             }
         }
 
@@ -48,6 +50,10 @@ if __name__ == "__main__":
 
     if op == "st":
         r = os.system(v["status"])
+
+    if op == "pl":
+        params = ' '.join(sys.argv[2:]).strip(' ')
+        r = os.system('%s %s' % (v["pull"], params))
 
     if op == "pp":
         r = os.system(v["push"])
