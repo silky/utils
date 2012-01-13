@@ -51,7 +51,7 @@ if __name__ == "__main__":
     if op == "pp":
         os.system(v["push"])
 
-    if op == "add" or op == "ad":
+    if op == "ad":
         os.system('%s %s' % (v["add"], ' '.join(sys.argv[2:]).strip(' ')))
 
     if op == "ci":

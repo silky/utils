@@ -1,0 +1,3 @@
+#!/bin/sh
+# Commit and push.
+ci $* && pp

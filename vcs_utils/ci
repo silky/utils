@@ -1,2 +1,2 @@
 #!/bin/sh
-python vcs_utils.py ci $*
+python ~/bin/scripts/vcs_utils.py ci $*
