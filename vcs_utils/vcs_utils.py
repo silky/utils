@@ -41,19 +41,30 @@ if __name__ == "__main__":
     vcs = get_vcs()
 
     if not vcs:
-        exit(2) # No version control system found.
+        sys.exit(1) # No version control system found.
 
     v = vcs_maps[vcs]
+    r = 0
 
     if op == "st":
-        os.system(v["status"])
+        r = os.system(v["status"])
 
     if op == "pp":
-        os.system(v["push"])
+        r = os.system(v["push"])
 
     if op == "ad":
-        os.system('%s %s' % (v["add"], ' '.join(sys.argv[2:]).strip(' ')))
+        r = os.system('%s %s' % (v["add"], ' '.join(sys.argv[2:]).strip(' ')))
 
     if op == "ci":
         commit_message = '"' + ' '.join(sys.argv[2:]).strip(' ') + '"'
-        os.system('%s %s' % (v["commit"], commit_message))
+        r = os.system('%s %s' % (v["commit"], commit_message))
+
+    if r > 255:
+        # Hmm: http://tldp.org/LDP/abs/html/exitcodes.html
+        # Essentially git or whoever has decided to return an error code
+        # that is used to make some other decisions; I just want an error
+        # though, so that's what we'll do.
+        r = 1
+
+    sys.exit(r)
+

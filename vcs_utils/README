@@ -1,0 +1,18 @@
+About:
+
+ A trivial script to provide some alias' for various repository actions. You can use
+the current shell scripts I've provided or modify them to suit your environment, I 
+have a ~/bin folder in my path, and this seems to work.
+
+Usage:
+
+ Anywhere in your filesystem, type the commands. If you are in a repository of some
+ variety (hg/git) it will detect that (by looking for the folders ".hg" and ".git")
+ and then will perform the relevant actions.
+
+Version:
+ 0.1
+
+Info:
+ By Noon Silk, 2012
+ Can be found here: http://github.com/silky/utils, probably.
