@@ -1,8 +1,13 @@
 import os
 
 vcs_maps = {
-        "git": {"status": "git status"},
-        "hg":  {"status": "hg st"}
+        "git": {
+            "status": "git status",
+            "add": "git add"},
+        "hg":  {
+            "status": "hg st", 
+            "add": "hg add", 
+            "commit": "hg commit -m"}
         }
 
 def command_st ():
