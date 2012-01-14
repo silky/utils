@@ -1,5 +1,4 @@
 #!/bin/zsh
 # Commit and push.
-args="$(printf "%q " "$@")"
-echo "$args"
-ci $args && pp
+# args="$(printf "%q " "$@")"
+ci "$@" && pp
