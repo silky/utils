@@ -4,4 +4,4 @@
 # calls other commands.
 #
 # args="$(printf "%q " "$@")"
-ci "$@" && pp
+ci $@ && pp
