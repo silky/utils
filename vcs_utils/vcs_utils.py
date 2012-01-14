@@ -63,7 +63,7 @@ if __name__ == "__main__":
         r = os.system('%s %s' % (v["add"], args))
 
     if op == "ci":
-        commit_message = '"' + ' '.join(sys.argv[2:]).strip(' ') + '"'
+        commit_message = ' '.join(sys.argv[2:]).strip(' ')
         r = os.system('%s %s' % (v["commit"], commit_message))
 
     if r > 255:
