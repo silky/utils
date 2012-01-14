@@ -1,2 +1,3 @@
-#!/bin/sh
-python ~/bin/scripts/vcs_utils.py pp $*
+#!/bin/zsh
+args="$(printf "%q " "$@")"
+python ~/bin/scripts/vcs_utils.py pp $args

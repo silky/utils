@@ -59,7 +59,8 @@ if __name__ == "__main__":
         r = os.system(v["push"])
 
     if op == "ad":
-        r = os.system('%s %s' % (v["add"], ' '.join(sys.argv[2:]).strip(' ')))
+        args = ' '.join(sys.argv[2:]).strip(' ')
+        r = os.system('%s %s' % (v["add"], args))
 
     if op == "ci":
         commit_message = '"' + ' '.join(sys.argv[2:]).strip(' ') + '"'
