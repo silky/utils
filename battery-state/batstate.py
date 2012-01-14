@@ -32,10 +32,10 @@ def display_state ():
     color_out = red
 
     if fraction > .15:
-        color_out = cyan
+        color_out = yellow
 
     if fraction > .3:
-        color_out = yellow
+        color_out = cyan
 
     if fraction > .6:
         color_out = green
