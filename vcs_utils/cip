@@ -1,4 +1,7 @@
 #!/bin/zsh
 # Commit and push.
+# The "magic" isn't needed here, because this only
+# calls other commands.
+#
 # args="$(printf "%q " "$@")"
 ci "$@" && pp
