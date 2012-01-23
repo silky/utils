@@ -10,8 +10,15 @@ def display_state ():
     full = float(
             commands.getoutput('grep "^last full capacity" /proc/acpi/battery/BAT0/info | awk \'{ print $4 }\'')
             )
+    charging = commands.getoutput('grep "^charging state" /proc/acpi/battery/BAT0/state | awk \'{ print $3 }\'')
     
     fraction = remaining/full
+
+    # Bugfix for systems that claim they are charged but the fraction
+    # is less than 1 ...
+    
+    if charging == "charged":
+        fraction = 1
 
     full  = "▲"
     empty = "△"
