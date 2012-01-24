@@ -70,6 +70,7 @@ if __name__ == "__main__":
     parser = bibtex.Parser()
     bib = parser.parse_file(bibtex_file)
     data = bib.entries.items()
+    # data[n][1].fields['file']
     print len(data)
 
     for f in glob.glob(os.path.join(okular_dir, '*.xml')):
