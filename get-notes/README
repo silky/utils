@@ -1,1 +1,12 @@
 Small tool to link my notes in Okular with my bibtex references.
+
+Specifically it produces a file for use in vimwiki with a list of
+all my 'active' notes. That is to say, notes generated from here
+should be transitioned to other areas, this just shows you what you
+have noted but have not yet organised into legitimate projects or
+comments.
+
+Usage:
+  python get_notes.py
+
+See the conf for what to configure.
