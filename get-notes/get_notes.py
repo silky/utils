@@ -23,6 +23,7 @@
 
 import os, glob, ConfigParser
 from elementtree.ElementTree import parse
+from pybtex.database.input import bibtex
 
 def consider_file (t): # {{{
     try:
@@ -35,8 +36,12 @@ def consider_file (t): # {{{
     if not pages or len(pages) <= 0:
         return
 
+    t = os.path.basename(t).split('.')
+    pdf = '.'.join(t[1:len(t) - 1])
+
     print ''
-    print 'In %s we found: %s notes' % (t, len(pages))
+    print 'In %s we found: %s notes' % (pdf, len(pages))
+    print 'hmm: %s%s' % (pdf_location, pdf)
 
     for p in pages:
         annotations = p.findall('annotationList/annotation/base')
@@ -52,11 +57,20 @@ def consider_file (t): # {{{
 # }}}
 
 
-if __name__ == "__main__":
-    config = ConfigParser.ConfigParser()
-    config.read('main.conf')
+config = ConfigParser.ConfigParser()
+config.read('main.conf')
 
-    okular_dir =  config.get('general', 'okular_dir')
+okular_dir   = config.get('general', 'okular_dir')
+bibtex_file  = config.get('general', 'bibtex_location')
+pdf_location = config.get('general', 'pdf_location')
+
+
+if __name__ == "__main__":
+
+    parser = bibtex.Parser()
+    bib = parser.parse_file(bibtex_file)
+    data = bib.entries.items()
+    print len(data)
 
     for f in glob.glob(os.path.join(okular_dir, '*.xml')):
         consider_file(f)
