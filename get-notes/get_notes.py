@@ -43,6 +43,8 @@ def consider_file (t): # {{{
     print 'In %s we found: %s notes' % (pdf, len(pages))
     print 'hmm: %s%s' % (pdf_location, pdf)
 
+    print dict_by_file[pdf+ ':' + pdf + ':PDF']
+
     for p in pages:
         annotations = p.findall('annotationList/annotation/base')
         page_number = int(p.get('number')) + 1
@@ -69,9 +71,9 @@ if __name__ == "__main__":
 
     parser = bibtex.Parser()
     bib = parser.parse_file(bibtex_file)
-    data = bib.entries.items()
-    # data[n][1].fields['file']
-    print len(data)
+    items = bib.entries.items()
+    dict_by_file = { k[1].fields['file']: k[1] for k in items if k[1].fields.has_key('file') }
+    # print dict_by_file.keys()
 
     for f in glob.glob(os.path.join(okular_dir, '*.xml')):
         consider_file(f)
