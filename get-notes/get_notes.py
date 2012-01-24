@@ -60,7 +60,7 @@ def consider_file (t): # {{{
 
         for an in annotations:
             contents = an.get('contents')
-            mynotes.append(contents)
+            mynotes.append('Page %s: %s' % (page_number, contents))
             # if contents:
             #     print '\t\t', contents
 
@@ -74,15 +74,18 @@ def output_vimwiki (data): # {{{
     out = StringIO.StringIO()
 
     for (k, v) in sorted(data.items()):
-        out.write("*%s*\n" % k)
+        title = bib.entries.get(k).fields['title']
+        title = '\n\t\t'.join(textwrap.wrap(title, 85))
+
+        out.write("*%s* - %s\n\n" % (k, title))
 
         for line in v:
             l = '\n\t'.join(textwrap.wrap(line, 85))
-            out.write('\t%s\n' % unicode(l))
+            out.write('\t%s\n' % l)
 
-        out.write('\n')
+        out.write('\n\n')
 
-    with codecs.open("out.wiki", "w", encoding="utf-8") as f:
+    with codecs.open(output_file, "w", encoding="utf-8") as f:
         f.write(out.getvalue())
 
     # Fixed
@@ -97,7 +100,8 @@ config.read('main.conf')
 okular_dir    = config.get('general', 'okular_dir')
 bibtex_file   = config.get('general', 'bibtex_location')
 pdf_location  = config.get('general', 'pdf_location')
-output_method = "vimwiki"
+output_method = config.get('output',  'method')
+output_file   = config.get('output',  'file')
 
 if __name__ == "__main__":
     parser = bibtex.Parser()
