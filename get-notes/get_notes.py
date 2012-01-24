@@ -22,8 +22,13 @@
 # </documentInfo>
 
 import os, glob, ConfigParser
+import StringIO
+import codecs
+import textwrap
 from elementtree.ElementTree import parse
 from pybtex.database.input import bibtex
+
+notes = {}
 
 def consider_file (t): # {{{
     try:
@@ -39,42 +44,79 @@ def consider_file (t): # {{{
     t = os.path.basename(t).split('.')
     pdf = '.'.join(t[1:len(t) - 1])
 
-    print ''
-    print 'In %s we found: %s notes' % (pdf, len(pages))
-    print 'hmm: %s%s' % (pdf_location, pdf)
+    # print ''
+    # print 'In %s we found: %s notes' % (pdf, len(pages))
+    # print 'hmm: %s%s' % (pdf_location, pdf)
 
-    print dict_by_file[pdf+ ':' + pdf + ':PDF']
+    bib_element =  dict_by_file[pdf+ ':' + pdf + ':PDF']
+
+    mynotes = []
 
     for p in pages:
         annotations = p.findall('annotationList/annotation/base')
         page_number = int(p.get('number')) + 1
 
-        print '\tOn page %s we have %s annotation(s).' % (page_number, len(annotations))
+        # print '\tOn page %s we have %s annotation(s).' % (page_number, len(annotations))
 
         for an in annotations:
             contents = an.get('contents')
-            if contents:
-                print '\t\t', contents
+            mynotes.append(contents)
+            # if contents:
+            #     print '\t\t', contents
+
+    notes[bib_element[0]] = mynotes
     # print content
+# }}}
+
+
+def output_vimwiki (data): # {{{
+
+    out = StringIO.StringIO()
+
+    for (k, v) in sorted(data.items()):
+        out.write("*%s*\n" % k)
+
+        for line in v:
+            l = '\n\t'.join(textwrap.wrap(line, 85))
+            out.write('\t%s\n' % unicode(l))
+
+        out.write('\n')
+
+    with codecs.open("out.wiki", "w", encoding="utf-8") as f:
+        f.write(out.getvalue())
+
+    # Fixed
+    out.close()
+
 # }}}
 
 
 config = ConfigParser.ConfigParser()
 config.read('main.conf')
 
-okular_dir   = config.get('general', 'okular_dir')
-bibtex_file  = config.get('general', 'bibtex_location')
-pdf_location = config.get('general', 'pdf_location')
-
+okular_dir    = config.get('general', 'okular_dir')
+bibtex_file   = config.get('general', 'bibtex_location')
+pdf_location  = config.get('general', 'pdf_location')
+output_method = "vimwiki"
 
 if __name__ == "__main__":
-
     parser = bibtex.Parser()
     bib = parser.parse_file(bibtex_file)
     items = bib.entries.items()
-    dict_by_file = { k[1].fields['file']: k[1] for k in items if k[1].fields.has_key('file') }
-    # print dict_by_file.keys()
 
+    dict_by_file = { k[1].fields['file']: k for k in items if k[1].fields.has_key('file') }
+
+    # 1. Consider okular comments
     for f in glob.glob(os.path.join(okular_dir, '*.xml')):
         consider_file(f)
 
+    # 2. Consider content of the bibtex 'review' field
+    for (k, v) in dict_by_file.items():
+        if v[1].fields.has_key('review'):
+            if not notes.has_key(v[0]):
+                notes[v[0]] = []
+
+            notes[v[0]].append( v[1].fields['review'] )
+            # print v.fields['review']
+
+    output_vimwiki(notes)
