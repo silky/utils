@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 # Sample contents:
 #
 # <?xml version="1.0" encoding="utf-8"?>
@@ -113,6 +116,8 @@ output_method = config.get('output',  'method')
 output_file   = config.get('output',  'file')
 
 if __name__ == "__main__":
+
+    print 'Loading bibtex database'
     parser = bibtex.Parser()
     bib = parser.parse_file(bibtex_file)
     items = bib.entries.items()
@@ -120,10 +125,12 @@ if __name__ == "__main__":
     dict_by_file = { k[1].fields['file']: k for k in items if k[1].fields.has_key('file') }
 
     # 1. Consider okular comments
+    print 'Processing okular annotations'
     for f in glob.glob(os.path.join(okular_dir, '*.xml')):
         consider_file(f)
 
     # 2. Consider content of the bibtex 'review' field
+    print 'Processing "review" field in bibtex'
     for (k, v) in dict_by_file.items():
         if v[1].fields.has_key('review'):
             if not notes.has_key(v[0]):
@@ -132,4 +139,5 @@ if __name__ == "__main__":
             notes[v[0]].append( v[1].fields['review'] )
             # print v.fields['review']
 
+    print 'Writing to vimwiki format'
     output_vimwiki(notes)
