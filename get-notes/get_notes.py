@@ -31,6 +31,7 @@ import codecs
 import textwrap
 from elementtree.ElementTree import parse
 from pybtex.database.input import bibtex
+import urllib
 
 notes = {}
 
@@ -88,8 +89,11 @@ def output_vimwiki (data): # {{{
     for (k, v) in sorted(data.items()):
         title = bib.entries.get(k).fields['title']
         title = '\n\t\t'.join(textwrap.wrap(title, 85))
+        relfile = bib.entries.get(k).fields['file'].split(':')[0]
 
-        out.write("*%s* - %s\n\n" % (k, title))
+        absfile = urllib.quote(pdf_location + "/" + relfile)
+        absfile = absfile.replace('%', '\%') # Hack for vim, otherwise it replaces this with the current dir.
+        out.write("*%s* - %s - file:///%s \n\n" % (k, title, absfile))
 
         for line in v:
             l = '\n\t'.join(textwrap.wrap(line, 85))
@@ -100,7 +104,6 @@ def output_vimwiki (data): # {{{
     with codecs.open(output_file, "w", encoding="utf-8") as f:
         f.write(out.getvalue())
 
-    # Fixed
     out.close()
 
 # }}}
