@@ -15,7 +15,7 @@ vcs_maps = {
             "add": "hg add", 
             "commit": "hg commit -m",
             "push": "hg push",
-            "pull": "hg pull",
+            "pull": "hg pull -u",
             }
         }
 
