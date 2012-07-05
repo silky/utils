@@ -1,0 +1,10 @@
+Tiny script to allow me to write "sel * from table" at the shell.
+
+To use, create the following alias in your shell rc (for me, .zshrc):
+    alias sel='noglob sel'
+
+Then you will need to create a .shelldb file in some appropriate directory, and have the following in it:
+    [general]
+    db = yourdb
+
+Note that this simply uses psql to execute the command, so clearly it will only work for such systems at the moment.
