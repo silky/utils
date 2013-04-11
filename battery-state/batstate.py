@@ -5,14 +5,23 @@ import commands, math, sys
 
 def display_state ():
     remaining = float(
-            commands.getoutput('grep "^remaining capacity" /proc/acpi/battery/BAT0/state | awk \'{ print $3 }\'')
+            # Old ubuntu
+            # commands.getoutput('grep "^remaining capacity" /proc/acpi/battery/BAT0/state | awk \'{ print $3 }\'')
+            commands.getoutput('upower -i ' +
+                    '/org/freedesktop/UPower/devices/battery_BAT0 | ' +
+                    'grep -E "percentage" | awk \'{ print $2 }\'').strip("%")
             )
-    full = float(
-            commands.getoutput('grep "^last full capacity" /proc/acpi/battery/BAT0/info | awk \'{ print $4 }\'')
-            )
-    charging = commands.getoutput('grep "^charging state" /proc/acpi/battery/BAT0/state | awk \'{ print $3 }\'')
+    # full = float(
+    #         commands.getoutput('grep "^last full capacity" /proc/acpi/battery/BAT0/info | awk \'{ print $4 }\'')
+    #         )
+    # Old
+    # charging = commands.getoutput('grep "^charging state" /proc/acpi/battery/BAT0/state | awk \'{ print $3 }\'')
+    #
+    charging = commands.getoutput('upower -i ' +
+            '/org/freedesktop/UPower/devices/battery_BAT0 | ' +
+            '"state" | awk "{ print $2 }"')
     
-    fraction = remaining/full
+    fraction = remaining/100.
 
     # Bugfix for systems that claim they are charged but the fraction
     # is less than 1 ...
