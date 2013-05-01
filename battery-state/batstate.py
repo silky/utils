@@ -19,14 +19,14 @@ def display_state ():
     #
     charging = commands.getoutput('upower -i ' +
             '/org/freedesktop/UPower/devices/battery_BAT0 | ' +
-            '"state" | awk "{ print $2 }"')
+            'grep -E "state" | awk \'{ print $2 }\'')
     
     fraction = remaining/100.
 
     # Bugfix for systems that claim they are charged but the fraction
     # is less than 1 ...
     
-    if charging == "charged":
+    if charging == "fully-charged":
         fraction = 1
 
     full  = "▲"

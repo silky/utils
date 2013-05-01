@@ -8,6 +8,7 @@ vcs_maps = {
             "commit": "git commit -am",
             "push": "git push",
             "pull": "git pull",
+            "branch": "git symbolic-ref HEAD | cut -d'/' -f3"
             },
         "hg":  {
             "folder": [".hg"],
@@ -16,6 +17,7 @@ vcs_maps = {
             "commit": "hg commit -m",
             "push": "hg push",
             "pull": "hg pull -u",
+            "branch": "hg branch"
             }
         }
 
@@ -50,6 +52,9 @@ if __name__ == "__main__":
 
     if op == "st":
         r = os.system(v["status"])
+
+    if op == "br":
+        r = os.system(v["branch"])
 
     if op == "pl":
         params = ' '.join(sys.argv[2:]).strip(' ')
