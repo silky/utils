@@ -53,6 +53,11 @@ def consider_file (t): # {{{
     # print 'In %s we found: %s notes' % (pdf, len(pages))
     # print 'hmm: %s%s' % (pdf_location, pdf)
 
+    tkey = pdf + ":" + pdf + ":PDF"
+
+    if not tkey in dict_by_file:
+        return False
+
     bib_element =  dict_by_file[pdf+ ':' + pdf + ':PDF']
 
     mynotes = []

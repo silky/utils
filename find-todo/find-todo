@@ -1,6 +1,6 @@
 #!/bin/sh
 # Change this as appropriate.
-find_todo_path="/home/noon/dev/silky-github/utils/find-todo/"
+find_todo_path="/home/noon/dev/utils/find-todo/"
 if [ -z "$1" ]
 then
     dir="${HOME}/dev"
