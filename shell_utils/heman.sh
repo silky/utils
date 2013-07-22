@@ -1,2 +1,2 @@
 #!/bin/sh
-man $@ || $@ --help
+man $@ || (shift $(($#-1)) && $1 --help)
