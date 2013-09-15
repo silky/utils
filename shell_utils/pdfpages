@@ -1,0 +1,2 @@
+#!/bin/sh
+pdftk "$@" dump_data output | grep -i NumberOfPages | awk '{ print $2; }'
